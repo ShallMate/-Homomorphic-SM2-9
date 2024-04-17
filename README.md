@@ -13,3 +13,12 @@ sm2enc.go与sm9.go里的init.go函数用于生成BSGS算法的预计算表
 
 
 此代码是基于[xlcetc/cryptogm](https://github.com/xlcetc/cryptogm)的二次开发,在这里表达感谢！
+
+## 例子：测试同态SM2
+```
+cd $GOPATH/src/github.com
+git clone https://github.com/ShallMate/-Homomorphic-SM2-9.git
+mv -- -Homomorphic-SM2-9 xlcetc
+cd xlcetc
+go run testgm.go
+```

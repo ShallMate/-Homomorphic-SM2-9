@@ -5,12 +5,11 @@ import (
 	"crypto/rand"
 
 	"encoding/binary"
-	"encoding/hex"
 	"fmt"
 	"math/big"
 	"time"
 
-	"github.com/btcsuite/btcd/btcec"
+	//"github.com/btcsuite/btcd/btcec"
 	"github.com/salviati/cuckoo"
 	"github.com/xlcetc/cryptogm/elliptic/sm9curve"
 	"github.com/xlcetc/cryptogm/sm/sm2"
@@ -43,141 +42,6 @@ var sm2hadd time.Duration = 0
 var sm2hmul time.Duration = 0
 var sm9hadd time.Duration = 0
 var sm9hmul time.Duration = 0
-
-func testbtcecc(message *big.Int) {
-	pubKeyBytes, err := hex.DecodeString("04115c42e757b2efb7671c578530ec191a1" +
-		"359381e6a71127a9d37c486fd30dae57e76dc58f693bd7e7010358ce6b165e483a29" +
-		"21010db67ac11b1b51b651953d2") // uncompressed pubkey
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	pubKey, err := btcec.ParsePubKey(pubKeyBytes, btcec.S256())
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	// Decode the hex-encoded private key.
-	pkBytes, _ := hex.DecodeString("a11b0a4e1a132305652ee7a8eb7848f6ad" +
-		"5ea381e3ce20a2c086a2e388230811")
-	// note that we already have corresponding pubKey
-	privKey, _ := btcec.PrivKeyFromBytes(btcec.S256(), pkBytes)
-	// Encrypt a message decryptable by the private key corresponding to pubKey
-	//msg := "29"
-	start1 := time.Now()
-	c1x, c1y, c2x, c2y := btcec.Encrypt(pubKey, message.Bytes())
-	cost1 := time.Since(start1)
-	fmt.Printf("btcecc encrypt cost=[%s]\n", cost1)
-	start2 := time.Now()
-	// Try decrypting and verify if it's the same message.
-	plaintext, err := btcec.Decrypt(privKey, c1x, c1y, c2x, c2y)
-	cost2 := time.Since(start2)
-	fmt.Printf("btcecc decrypt cost=[%s]\n", cost2)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	fmt.Println("hecc Decryption Result : ", plaintext)
-	cost3 := cost1 + cost2
-	fmt.Printf("btcecc all cost=[%s]\n", cost3)
-	eccenall = eccenall + cost1
-	eccdeall = eccdeall + cost2
-}
-
-func testhbtcecc(message1 *big.Int, message2 *big.Int) {
-	pubKeyBytes, err := hex.DecodeString("04115c42e757b2efb7671c578530ec191a1" +
-		"359381e6a71127a9d37c486fd30dae57e76dc58f693bd7e7010358ce6b165e483a29" +
-		"21010db67ac11b1b51b651953d2") // uncompressed pubkey
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	pubKey, err := btcec.ParsePubKey(pubKeyBytes, btcec.S256())
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	// Decode the hex-encoded private key.
-	pkBytes, _ := hex.DecodeString("a11b0a4e1a132305652ee7a8eb7848f6ad" +
-		"5ea381e3ce20a2c086a2e388230811")
-	// note that we already have corresponding pubKey
-	privKey, _ := btcec.PrivKeyFromBytes(btcec.S256(), pkBytes)
-	// Encrypt a message decryptable by the private key corresponding to pubKey
-	//msg := "29"
-	c := btcec.S256()
-	start1 := time.Now()
-	c1x1, c1y1, c2x1, c2y1 := btcec.Encrypt(pubKey, message1.Bytes())
-	c1x2, c1y2, c2x2, c2y2 := btcec.Encrypt(pubKey, message2.Bytes())
-	c1x, c1y := c.Add(c1x1, c1y1, c1x2, c1y2)
-	c2x, c2y := c.Add(c2x1, c2y1, c2x2, c2y2)
-	cost1 := time.Since(start1)
-	fmt.Printf("btcecc encrypt cost=[%s]\n", cost1)
-	start2 := time.Now()
-	// Try decrypting and verify if it's the same message.
-	plaintext, err := btcec.Decrypt(privKey, c1x, c1y, c2x, c2y)
-	cost2 := time.Since(start2)
-	fmt.Printf("btcecc decrypt cost=[%s]\n", cost2)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	fmt.Println("hecc Decryption Result : ", plaintext)
-	cost3 := cost1 + cost2
-	fmt.Printf("btcecc all cost=[%s]\n", cost3)
-	eccenall = eccenall + cost1
-	eccdeall = eccdeall + cost2
-}
-
-func testecchadd(m1 *big.Int, m2 *big.Int) {
-	pubKeyBytes, err := hex.DecodeString("04115c42e757b2efb7671c578530ec191a1" +
-		"359381e6a71127a9d37c486fd30dae57e76dc58f693bd7e7010358ce6b165e483a29" +
-		"21010db67ac11b1b51b651953d2") // uncompressed pubkey
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	pubKey, err := btcec.ParsePubKey(pubKeyBytes, btcec.S256())
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	// Encrypt a message decryptable by the private key corresponding to pubKey
-	//msg := "29"
-	c := btcec.S256()
-	c1x1, c1y1, c2x1, c2y1 := btcec.Encrypt(pubKey, m1.Bytes())
-	c1x2, c1y2, c2x2, c2y2 := btcec.Encrypt(pubKey, m2.Bytes())
-	start2 := time.Now()
-	_, _ = c.Add(c1x1, c1y1, c1x2, c1y2)
-	_, _ = c.Add(c2x1, c2y1, c2x2, c2y2)
-	cost2 := time.Since(start2)
-	ecchadd = ecchadd + cost2
-}
-
-func testecchmul(m1 *big.Int, p *big.Int) {
-	pubKeyBytes, err := hex.DecodeString("04115c42e757b2efb7671c578530ec191a1" +
-		"359381e6a71127a9d37c486fd30dae57e76dc58f693bd7e7010358ce6b165e483a29" +
-		"21010db67ac11b1b51b651953d2") // uncompressed pubkey
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	pubKey, err := btcec.ParsePubKey(pubKeyBytes, btcec.S256())
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	// Encrypt a message decryptable by the private key corresponding to pubKey
-	//msg := "29"
-	c := btcec.S256()
-	c1x1, c1y1, c2x1, c2y1 := btcec.Encrypt(pubKey, m1.Bytes())
-	start2 := time.Now()
-	_, _ = c.ScalarMult(c1x1, c1y1, p.Bytes())
-	_, _ = c.ScalarMult(c2x1, c2y1, p.Bytes())
-	cost2 := time.Since(start2)
-	ecchmul = ecchmul + cost2
-}
 
 func testsm2hadd(m1 *big.Int, m2 *big.Int) {
 	sk, _ := sm2.GenerateKey(rand.Reader)
@@ -301,26 +165,24 @@ func main() {
 		fmt.Printf("1000 times 32 bit paillier decrypto cost=[%s]\n", paillierdeall)
 	*/
 
-	/*
-		sk, _ := sm2.GenerateKey(rand.Reader)
-		pk := sk.PublicKey
-		for i := 0; i < 1000; i++ {
-			start1 := time.Now()
-			cipher, _ := sm2.Encrypt(rand.Reader, &pk, []byte(messages[0].String()))
-			cost1 := time.Since(start1)
-			sm2enall = sm2enall + cost1
-			fmt.Printf("standard sm2 encrypto cost=[%s]\n", cost1)
-			//test decryption
-			start2 := time.Now()
-			plain, _ := sm2.Decrypt(cipher, sk)
-			cost2 := time.Since(start2)
-			sm2deall = sm2deall + cost2
-			fmt.Printf("standard sm2 decrypto cost=[%s]\n", cost2)
-			fmt.Println(string(plain))
-		}
-		fmt.Printf("1000 times 32 bit standard sm2 encrypto cost=[%s]\n", sm2enall)
-		fmt.Printf("1000 times 32 bit standard sm2 decrypto cost=[%s]\n", sm2deall)
-	*/
+	sk, _ := sm2.GenerateKey(rand.Reader)
+	pk := sk.PublicKey
+	for i := 0; i < 1000; i++ {
+		start1 := time.Now()
+		cipher, _ := sm2.Encrypt(rand.Reader, &pk, []byte(messages[0].String()))
+		cost1 := time.Since(start1)
+		sm2enall = sm2enall + cost1
+		fmt.Printf("standard sm2 encrypto cost=[%s]\n", cost1)
+		//test decryption
+		start2 := time.Now()
+		plain, _ := sm2.Decrypt(cipher, sk)
+		cost2 := time.Since(start2)
+		sm2deall = sm2deall + cost2
+		fmt.Printf("standard sm2 decrypto cost=[%s]\n", cost2)
+		fmt.Println(string(plain))
+	}
+	fmt.Printf("1000 times 32 bit standard sm2 encrypto cost=[%s]\n", sm2enall)
+	fmt.Printf("1000 times 32 bit standard sm2 decrypto cost=[%s]\n", sm2deall)
 
 	/*
 		sk, _ := sm2.GenerateKey(rand.Reader)
@@ -434,10 +296,11 @@ func main() {
 		}
 		fmt.Printf("1000 times 32 bit homomorphic sm9 h-add cost=[%s]\n", sm9hadd)
 	*/
-
-	for i := 0; i < 1000; i++ {
-		fmt.Println(i)
-		testsm9hmul(messages[i], messages[999-i])
-	}
-	fmt.Printf("1000 times 32 bit homomorphic sm9 h-mul cost=[%s]\n", sm9hmul)
+	/*
+		for i := 0; i < 1000; i++ {
+			fmt.Println(i)
+			testsm9hmul(messages[i], messages[999-i])
+		}
+		fmt.Printf("1000 times 32 bit homomorphic sm9 h-mul cost=[%s]\n", sm9hmul)
+	*/
 }
