@@ -22,3 +22,7 @@ mv -- -Homomorphic-SM2-9 xlcetc
 cd xlcetc
 go run testgm.go
 ```
+
+## Paper
+
+http://www.jcr.cacrnet.org.cn/CN/10.13868/j.cnki.jcr.000532
