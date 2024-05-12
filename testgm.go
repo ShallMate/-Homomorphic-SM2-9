@@ -165,47 +165,47 @@ func main() {
 		fmt.Printf("1000 times 32 bit paillier decrypto cost=[%s]\n", paillierdeall)
 	*/
 
-	sk, _ := sm2.GenerateKey(rand.Reader)
-	pk := sk.PublicKey
-	for i := 0; i < 1000; i++ {
-		start1 := time.Now()
-		cipher, _ := sm2.Encrypt(rand.Reader, &pk, []byte(messages[0].String()))
-		cost1 := time.Since(start1)
-		sm2enall = sm2enall + cost1
-		fmt.Printf("standard sm2 encrypto cost=[%s]\n", cost1)
-		//test decryption
-		start2 := time.Now()
-		plain, _ := sm2.Decrypt(cipher, sk)
-		cost2 := time.Since(start2)
-		sm2deall = sm2deall + cost2
-		fmt.Printf("standard sm2 decrypto cost=[%s]\n", cost2)
-		fmt.Println(string(plain))
-	}
-	fmt.Printf("1000 times 32 bit standard sm2 encrypto cost=[%s]\n", sm2enall)
-	fmt.Printf("1000 times 32 bit standard sm2 decrypto cost=[%s]\n", sm2deall)
-
 	/*
 		sk, _ := sm2.GenerateKey(rand.Reader)
 		pk := sk.PublicKey
-		//fmt.Println(messages[0].String())
-		//test encryption
 		for i := 0; i < 1000; i++ {
 			start1 := time.Now()
-			c1x, c1y, c2x, c2y := sm2.LgwHEnc(rand.Reader, &pk, messages[i])
+			cipher, _ := sm2.Encrypt(rand.Reader, &pk, []byte(messages[0].String()))
 			cost1 := time.Since(start1)
-			fmt.Printf("sm2 encrypto cost=[%s]\n", cost1)
-			hsm2enall = hsm2enall + cost1
+			sm2enall = sm2enall + cost1
+			fmt.Printf("standard sm2 encrypto cost=[%s]\n", cost1)
 			//test decryption
 			start2 := time.Now()
-			plain, _ := sm2.LgwHDec(sk, c1x, c1y, c2x, c2y)
+			plain, _ := sm2.Decrypt(cipher, sk)
 			cost2 := time.Since(start2)
-			fmt.Printf("sm2 decrypto cost=[%s]\n", cost2)
-			hsm2deall = hsm2deall + cost2
-			fmt.Println(plain)
+			sm2deall = sm2deall + cost2
+			fmt.Printf("standard sm2 decrypto cost=[%s]\n", cost2)
+			fmt.Println(string(plain))
 		}
-		fmt.Printf("1000 times 32 bit homomorphic sm2 encrypto cost=[%s]\n", hsm2enall)
-		fmt.Printf("1000 times 32 bit homomorphic sm2 decrypto cost=[%s]\n", hsm2deall)
+		fmt.Printf("1000 times 32 bit standard sm2 encrypto cost=[%s]\n", sm2enall)
+		fmt.Printf("1000 times 32 bit standard sm2 decrypto cost=[%s]\n", sm2deall)
 	*/
+
+	sk, _ := sm2.GenerateKey(rand.Reader)
+	pk := sk.PublicKey
+	//fmt.Println(messages[0].String())
+	//test encryption
+	for i := 0; i < 1000; i++ {
+		start1 := time.Now()
+		c1x, c1y, c2x, c2y := sm2.LgwHEnc(rand.Reader, &pk, messages[i])
+		cost1 := time.Since(start1)
+		fmt.Printf("sm2 encrypto cost=[%s]\n", cost1)
+		hsm2enall = hsm2enall + cost1
+		//test decryption
+		start2 := time.Now()
+		plain, _ := sm2.LgwHDec(sk, c1x, c1y, c2x, c2y)
+		cost2 := time.Since(start2)
+		fmt.Printf("sm2 decrypto cost=[%s]\n", cost2)
+		hsm2deall = hsm2deall + cost2
+		fmt.Println(plain)
+	}
+	fmt.Printf("1000 times 32 bit homomorphic sm2 encrypto cost=[%s]\n", hsm2enall)
+	fmt.Printf("1000 times 32 bit homomorphic sm2 decrypto cost=[%s]\n", hsm2deall)
 
 	/*
 		mk, _ := sm9.MasterKeyGen(rand.Reader)
